@@ -5,7 +5,7 @@
  */
 
 // Automatically use the same IP as the page, but backend on port 8000
-const API_BASE = `${window.location.protocol}//${window.location.hostname}:8000`;
+const API_BASE = window.location.origin;
 
 const Api = {
   getToken() {
