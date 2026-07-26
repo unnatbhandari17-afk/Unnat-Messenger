@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nimbus Messenger</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="app-body">
+
+<div class="app-shell">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar glass-panel" id="sidebar">
+    <div class="sidebar-top">
+      <div class="my-profile" id="myProfileBtn">
+        <img id="myAvatar" class="avatar avatar-sm" src="" alt="me">
+        <div class="my-info">
+          <div class="my-name" id="myUsername">—</div>
+          <div class="my-status">🟢 Active</div>
+        </div>
+      </div>
+      <div class="sidebar-icons">
+        <button class="icon-btn" id="newChatBtn" title="New chat">✏️</button>
+        <button class="icon-btn" id="newGroupBtn" title="New group">👥</button>
+        <button class="icon-btn" id="settingsBtn" title="Settings">⚙️</button>
+      </div>
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search people, chats, messages…">
+    </div>
+
+    <div class="sidebar-filters">
+      <button class="filter-chip active" data-filter="all">All</button>
+      <button class="filter-chip" data-filter="unread">Unread</button>
+      <button class="filter-chip" data-filter="pinned">Pinned</button>
+      <button class="filter-chip" data-filter="archived">Archived</button>
+      <button class="filter-chip" data-filter="groups">Groups</button>
+    </div>
+
+    <div class="chat-list" id="chatList">
+      <div class="empty-state">Loading chats…</div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN CHAT ============ -->
+  <main class="chat-area">
+
+    <div id="noChatSelected" class="no-chat-selected">
+      <div class="no-chat-icon">💬</div>
+      <h2>Select a chat to start messaging</h2>
+      <p>Or start a new conversation with the ✏️ button</p>
+    </div>
+
+    <div id="activeChat" class="active-chat" style="display:none;">
+      <header class="chat-header glass-panel">
+        <button class="icon-btn mobile-back" id="mobileBackBtn" title="Back">←</button>
+        <div class="chat-header-info" id="chatHeaderInfo">
+          <img id="chatAvatar" class="avatar avatar-sm" src="" alt="">
+          <div>
+            <div class="chat-title" id="chatTitle">—</div>
+            <div class="chat-subtitle" id="chatSubtitle">—</div>
+          </div>
+        </div>
+        <div class="chat-header-actions">
+          <button class="icon-btn" id="voiceCallBtn" title="Voice call" style="display:none;">📞</button>
+          <button class="icon-btn" id="videoCallBtn" title="Video call" style="display:none;">🎥</button>
+          <button class="icon-btn" id="chatSearchBtn" title="Search in chat">🔍</button>
+          <button class="icon-btn" id="chatInfoBtn" title="Chat info">ℹ️</button>
+        </div>
+      </header>
+
+      <div class="in-chat-search" id="inChatSearch" style="display:none;">
+        <input type="text" id="inChatSearchInput" placeholder="Search messages in this chat…">
+        <button id="closeInChatSearch">✕</button>
+      </div>
+
+      <div class="messages-container" id="messagesContainer">
+        <div class="load-more-wrap">
+          <button id="loadMoreBtn" class="btn-ghost small" style="display:none;">Load earlier messages</button>
+        </div>
+        <div id="messagesList" class="messages-list"></div>
+        <div class="typing-indicator" id="typingIndicator" style="display:none;"></div>
+      </div>
+
+      <div class="reply-preview" id="replyPreview" style="display:none;">
+        <div class="reply-preview-content">
+          <span class="reply-label">Replying to <b id="replyToName"></b></span>
+          <div id="replyToText" class="reply-preview-text"></div>
+        </div>
+        <button id="cancelReply">✕</button>
+      </div>
+
+      <div class="attachment-preview" id="attachmentPreview" style="display:none;"></div>
+
+      <form class="message-input-bar glass-panel" id="messageForm">
+        <button type="button" class="icon-btn" id="attachBtn" title="Attach file">📎</button>
+        <input type="file" id="fileInput" hidden>
+        <button type="button" class="icon-btn" id="emojiBtn" title="Emoji">😊</button>
+        <div id="emojiPicker" class="emoji-picker" style="display:none;"></div>
+        <input type="text" id="messageInput" class="message-input" placeholder="Type a message…" autocomplete="off">
+        <button type="button" class="icon-btn" id="micBtn" title="Voice message">🎤</button>
+        <button type="submit" class="send-btn" id="sendBtn" title="Send">➤</button>
+      </form>
+    </div>
+  </main>
+</div>
+
+<!-- ============ MODALS ============ -->
+
+<div class="modal-overlay" id="newChatModal">
+  <div class="modal glass-card">
+    <div class="modal-header"><h3>New Chat</h3><button class="modal-close" data-close="newChatModal">✕</button></div>
+    <input type="text" id="userSearchInput" placeholder="Search by username…" class="modal-input">
+    <div id="userSearchResults" class="modal-list"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="newGroupModal">
+  <div class="modal glass-card">
+    <div class="modal-header"><h3>New Group</h3><button class="modal-close" data-close="newGroupModal">✕</button></div>
+    <input type="text" id="groupNameInput" placeholder="Group name" class="modal-input">
+    <textarea id="groupDescInput" placeholder="Group description (optional)" class="modal-input" rows="2"></textarea>
+    <input type="text" id="groupMemberSearch" placeholder="Search people to add…" class="modal-input">
+    <div id="groupMemberResults" class="modal-list"></div>
+    <div id="groupSelectedMembers" class="chip-list"></div>
+    <button id="createGroupBtn" class="btn-primary">Create Group</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="chatInfoModal">
+  <div class="modal glass-card">
+    <div class="modal-header"><h3 id="chatInfoTitle">Chat Info</h3><button class="modal-close" data-close="chatInfoModal">✕</button></div>
+    <div id="chatInfoBody"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="profileModal">
+  <div class="modal glass-card">
+    <div class="modal-header"><h3>My Profile</h3><button class="modal-close" data-close="profileModal">✕</button></div>
+    <div class="profile-edit">
+      <div class="cover-wrap">
+        <img id="profileCover" class="cover-img" src="" alt="cover">
+        <button class="upload-badge cover-upload" id="coverUploadBtn">📷 Cover</button>
+        <input type="file" id="coverInput" hidden accept="image/*">
+      </div>
+      <div class="avatar-wrap">
+        <img id="profileAvatar" class="avatar avatar-lg" src="" alt="avatar">
+        <button class="upload-badge avatar-upload" id="avatarUploadBtn">📷</button>
+        <input type="file" id="avatarInput" hidden accept="image/*">
+      </div>
+      <div class="field"><label>Username</label><input type="text" id="profileUsername" disabled></div>
+      <div class="field"><label>Email</label><input type="text" id="profileEmail" disabled></div>
+      <div class="field"><label>About</label><textarea id="profileAbout" rows="2"></textarea></div>
+      <div class="field"><label>Status</label><input type="text" id="profileStatus" placeholder="What's on your mind?"></div>
+      <button id="saveProfileBtn" class="btn-primary">Save Changes</button>
+      <hr class="divider">
+      <h4>Change Password</h4>
+      <div class="field"><input type="password" id="oldPassword" placeholder="Current password"></div>
+      <div class="field"><input type="password" id="newPassword" placeholder="New password"></div>
+      <button id="changePasswordBtn" class="btn-ghost">Update Password</button>
+      <div id="profileMsg" class="form-success"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal glass-card">
+    <div class="modal-header"><h3>Settings</h3><button class="modal-close" data-close="settingsModal">✕</button></div>
+    <div class="settings-list">
+      <div class="settings-row">
+        <span>Dark Mode</span>
+        <label class="switch"><input type="checkbox" id="darkModeSwitch"><span class="slider"></span></label>
+      </div>
+      <div class="settings-row">
+        <span>Desktop Notifications</span>
+        <label class="switch"><input type="checkbox" id="notifSwitch"><span class="slider"></span></label>
+      </div>
+      <div class="settings-row clickable" id="blockedUsersBtn">
+        <span>Blocked Users</span><span class="chevron">›</span>
+      </div>
+      <div class="settings-row clickable" id="myProfileSettingsBtn">
+        <span>Edit Profile</span><span class="chevron">›</span>
+      </div>
+      <div class="settings-row clickable" id="logoutBtn">
+        <span class="danger-text">Log Out</span><span class="chevron">›</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="blockedModal">
+  <div class="modal glass-card">
+    <div class="modal-header"><h3>Blocked Users</h3><button class="modal-close" data-close="blockedModal">✕</button></div>
+    <div id="blockedList" class="modal-list"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="forwardModal">
+  <div class="modal glass-card">
+    <div class="modal-header"><h3>Forward Message</h3><button class="modal-close" data-close="forwardModal">✕</button></div>
+    <div id="forwardChatList" class="modal-list"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deleteConfirmModal">
+  <div class="modal glass-card small">
+    <h3>Delete message?</h3>
+    <p class="muted">This action can be undone only for "delete for me".</p>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="deleteForMeBtn">Delete for me</button>
+      <button class="btn-danger" id="deleteForEveryoneBtn">Delete for everyone</button>
+      <button class="btn-ghost" data-close="deleteConfirmModal">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<img id="lightboxImg" class="lightbox" style="display:none;">
+
+<!-- ============ CALL OVERLAYS ============ -->
+
+<div class="call-overlay" id="incomingCallOverlay">
+  <div class="call-card glass-card">
+    <img id="incomingCallAvatar" class="avatar avatar-lg call-ring-pulse" src="" alt="">
+    <h3 id="incomingCallName">—</h3>
+    <p class="muted" id="incomingCallType">Incoming call…</p>
+    <div class="call-actions">
+      <button class="call-round-btn reject" id="rejectCallBtn" title="Decline">✕</button>
+      <button class="call-round-btn accept" id="acceptCallBtn" title="Accept">📞</button>
+    </div>
+  </div>
+</div>
+
+<div class="call-overlay" id="outgoingCallOverlay">
+  <div class="call-card glass-card">
+    <img id="outgoingCallAvatar" class="avatar avatar-lg call-ring-pulse" src="" alt="">
+    <h3 id="outgoingCallName">—</h3>
+    <p class="muted" id="outgoingCallStatus">Calling…</p>
+    <div class="call-actions">
+      <button class="call-round-btn reject" id="cancelCallBtn" title="Cancel">✕</button>
+    </div>
+  </div>
+</div>
+
+<div class="call-overlay in-call" id="activeCallOverlay">
+  <div class="call-stage" id="callStage">
+    <video id="remoteVideo" autoplay playsinline></video>
+    <audio id="remoteAudio" autoplay></audio>
+
+    <div class="call-audio-view" id="callAudioView">
+      <img id="activeCallAvatar" class="avatar avatar-lg" src="" alt="">
+      <h3 id="activeCallName">—</h3>
+    </div>
+
+    <video id="localVideo" autoplay playsinline muted class="local-video-pip"></video>
+
+    <div class="call-top-bar">
+      <span class="call-quality-dot" id="callQualityDot"></span>
+      <span class="call-status-label" id="callStatusLabel">Connecting…</span>
+      <span class="call-muted-badge" id="remotePeerMuted" style="display:none;">🔇 Muted</span>
+      <span class="call-timer" id="callTimer">00:00</span>
+    </div>
+
+    <div class="call-controls">
+      <button class="call-ctrl-btn" id="muteBtn" title="Mute">🎤</button>
+      <button class="call-ctrl-btn" id="cameraToggleBtn" title="Camera on/off">📷</button>
+      <button class="call-ctrl-btn" id="switchCameraBtn" title="Switch camera">🔄</button>
+      <button class="call-ctrl-btn" id="fullscreenBtn" title="Fullscreen">⛶</button>
+      <button class="call-ctrl-btn end" id="hangupBtn" title="End call">📵</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/websocket.js"></script>
+<script src="js/calls.js"></script>
+<script src="js/chat.js"></script>
+</body>
+</html>

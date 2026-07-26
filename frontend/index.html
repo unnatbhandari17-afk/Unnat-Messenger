@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Messenger — Sign In</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-body">
+
+  <div class="auth-bg-shapes">
+    <span class="shape shape-1"></span>
+    <span class="shape shape-2"></span>
+    <span class="shape shape-3"></span>
+  </div>
+
+  <button id="themeToggle" class="theme-toggle" title="Toggle theme">🌙</button>
+
+  <div class="auth-wrapper glass-card">
+    <div class="auth-brand">
+      <div class="brand-logo">💬</div>
+      <h1>Nimbus</h1>
+      <p class="brand-tag">Fast. Beautiful. Yours.</p>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login">Sign In</button>
+      <button class="auth-tab" data-tab="register">Register</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <form id="loginForm" class="auth-form active">
+      <div class="field">
+        <label>Username or Email</label>
+        <input type="text" id="loginIdentifier" placeholder="you@example.com" required autocomplete="username">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
+      </div>
+      <div class="field-row">
+        <label class="checkbox-label">
+          <input type="checkbox" id="rememberMe"> Remember me
+        </label>
+        <a href="#" id="forgotLink" class="link-muted">Forgot password?</a>
+      </div>
+      <div id="loginError" class="form-error"></div>
+      <button type="submit" class="btn-primary">Sign In</button>
+    </form>
+
+    <!-- REGISTER FORM -->
+    <form id="registerForm" class="auth-form">
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="regUsername" placeholder="janedoe" required minlength="3" maxlength="32">
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="regEmail" placeholder="you@example.com" required>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="regPassword" placeholder="At least 8 characters" required minlength="8">
+        <div class="strength-meter"><span id="strengthBar"></span></div>
+        <small id="strengthLabel" class="strength-label">Password strength</small>
+      </div>
+      <div id="registerError" class="form-error"></div>
+      <button type="submit" class="btn-primary">Create Account</button>
+    </form>
+
+    <!-- FORGOT PASSWORD (UI only, as specified) -->
+    <form id="forgotForm" class="auth-form">
+      <p class="forgot-note">Enter your email and we'll send you a reset link.</p>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="forgotEmail" placeholder="you@example.com" required>
+      </div>
+      <div id="forgotSuccess" class="form-success"></div>
+      <button type="submit" class="btn-primary">Send Reset Link</button>
+      <button type="button" id="backToLogin" class="btn-ghost">Back to Sign In</button>
+    </form>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
